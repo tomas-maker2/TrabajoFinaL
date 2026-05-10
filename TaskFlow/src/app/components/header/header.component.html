@@ -1,1 +1,12 @@
-<p>header works!</p>
+<header class="header">
+  <div class="header-content">
+    <div class="logo">
+      <h1>✅ TaskFlow</h1>
+    </div>
+    
+    <div class="user-info" *ngIf="currentUser">
+      <span class="user-name">👋 Hola, {{ currentUser.name }}</span>
+      <button class="btn-logout" (click)="logout()">🚪 Cerrar Sesión</button>
+    </div>
+  </div>
+</header>

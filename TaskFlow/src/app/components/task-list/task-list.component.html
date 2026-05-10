@@ -1,1 +1,71 @@
-<p>task-list works!</p>
+<div class="task-dashboard">
+  <!-- Stats Cards -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-number">{{ getTotalCount() }}</div>
+      <div class="stat-label">Total Tareas</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-number">{{ getPendingCount() }}</div>
+      <div class="stat-label">Pendientes</div>
+    </div>
+    <div class="stat-card completed">
+      <div class="stat-number">{{ getCompletedCount() }}</div>
+      <div class="stat-label">Completadas</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-container">
+    <label>🔍 Filtrar por categoría:</label>
+    <select [(ngModel)]="filterCategory" (change)="onFilterChange()">
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+  </div>
+
+  <!-- Task Form -->
+  <app-task-form (taskAdded)="onTaskAdded($event)"></app-task-form>
+
+  <!-- Task List -->
+  <div class="task-list">
+    <h3>📋 Mis Tareas</h3>
+    
+    <div *ngIf="tasks.length === 0" class="empty-state">
+      <p>🎉 No hay tareas</p>
+      <p>Crea tu primera tarea usando el formulario de arriba</p>
+    </div>
+
+    <div *ngFor="let task of tasks" class="task-item" [class.completed]="task.completed">
+      <div class="task-content">
+        <div class="task-header">
+          <h4>{{ task.name }}</h4>
+          <span class="category-badge">{{ task.category }}</span>
+        </div>
+        
+        <p class="task-description" *ngIf="task.description">
+          {{ task.description }}
+        </p>
+        
+        <div class="task-footer">
+          <span class="task-date">📅 {{ task.getFormattedDate() }}</span>
+        </div>
+      </div>
+      
+      <div class="task-actions">
+        <button 
+          *ngIf="!task.completed" 
+          (click)="onCompleteTask(task.id)"
+          class="btn-complete"
+          title="Completar">
+          ✅
+        </button>
+        <button 
+          (click)="onDeleteTask(task.id)"
+          class="btn-delete"
+          title="Eliminar">
+          🗑️
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

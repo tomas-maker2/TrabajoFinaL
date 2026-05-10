@@ -1,1 +1,37 @@
-<p>task-form works!</p>
+<div class="task-form-card">
+  <h3>➕ Nueva Tarea</h3>
+  
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Nombre de la tarea *</label>
+      <input
+        type="text"
+        id="name"
+        [(ngModel)]="name"
+        name="name"
+        placeholder="Ej: Comprar alimentos"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <textarea
+        id="description"
+        [(ngModel)]="description"
+        name="description"
+        rows="3"
+        placeholder="Descripción detallada de la tarea..."
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Categoría</label>
+      <select id="category" [(ngModel)]="category" name="category">
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn-add">Agregar Tarea</button>
+  </form>
+</div>
