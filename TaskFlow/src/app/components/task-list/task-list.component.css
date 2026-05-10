@@ -194,3 +194,60 @@
     align-self: flex-end;
   }
 }
+
+/* NUEVO: Estilos para prioridades */
+.task-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.priority-indicator {
+  font-size: 1.2em;
+}
+
+.completed-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.task-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.priority-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.priority-alta {
+  background: #dc3545;
+  color: white;
+}
+
+.priority-media {
+  background: #ffc107;
+  color: #333;
+}
+
+.priority-baja {
+  background: #28a745;
+  color: white;
+}
+
+/* Ordenar tareas por prioridad (opcional) */
+.task-item[data-priority="alta"] {
+  border-left-color: #dc3545;
+}
+
+.task-item[data-priority="media"] {
+  border-left-color: #ffc107;
+}
+
+.task-item[data-priority="baja"] {
+  border-left-color: #28a745;
+}

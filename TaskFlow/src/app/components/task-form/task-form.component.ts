@@ -15,6 +15,13 @@ export class TaskFormComponent {
   category = 'Personal';
   
   categories = ['Personal', 'Trabajo', 'Estudio', 'Hogar', 'Otros'];
+   priority: 'alta' | 'media' | 'baja' = 'media';
+
+  priorities: { value: 'alta' | 'media' | 'baja', label: string, color: string }[] = [
+    { value: 'alta', label: '🔴 Alta', color: '#dc3545' },
+    { value: 'media', label: '🟡 Media', color: '#ffc107' },
+    { value: 'baja', label: '🟢 Baja', color: '#28a745' }
+  ];
 
   onSubmit(): void {
     if (!this.name.trim()) {
@@ -22,12 +29,13 @@ export class TaskFormComponent {
       return;
     }
 
-    const newTask = new Task(this.name, this.description, this.category);
+    const newTask = new Task(this.name, this.description, this.category,  this.priority);
     this.taskAdded.emit(newTask);
     
     // Reset form
     this.name = '';
     this.description = '';
     this.category = 'Personal';
+    this.priority = 'media';
   }
 }

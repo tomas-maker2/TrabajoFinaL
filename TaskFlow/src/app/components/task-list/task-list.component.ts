@@ -19,7 +19,8 @@ export class TaskListComponent implements OnInit {
   }
 
   loadTasks(): void {
-    this.tasks = this.taskService.filterByCategory(this.filterCategory);
+     let tasks = this.taskService.filterByCategory(this.filterCategory);
+     this.tasks = this.sortTasksByPriority(tasks);  // Ordenar por prioridad
   }
 
   onTaskAdded(task: Task): void {
@@ -53,5 +54,11 @@ export class TaskListComponent implements OnInit {
 
   getTotalCount(): number {
     return this.tasks.length;
+  }
+
+  // NUEVO: Ordenar tareas por prioridad (Alta → Media → Baja)
+  sortTasksByPriority(tasks: Task[]): Task[] {
+    const priorityOrder = { 'alta': 0, 'media': 1, 'baja': 2 };
+    return tasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }
 }

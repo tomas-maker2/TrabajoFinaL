@@ -58,3 +58,30 @@
   background: #218838;
   transform: translateY(-2px);
 }
+
+/* NUEVO: Estilos para selector de prioridad */
+.priority-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.priority-btn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.priority-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.priority-btn.selected {
+  border-color: #333;
+  transform: scale(1.02);
+}

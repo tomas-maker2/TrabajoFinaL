@@ -38,9 +38,19 @@
     <div *ngFor="let task of tasks" class="task-item" [class.completed]="task.completed">
       <div class="task-content">
         <div class="task-header">
-          <h4>{{ task.name }}</h4>
+        <div class="task-title">
+          <span class="priority-indicator" [class]="task.getPriorityClass()">
+            {{ task.getPriorityIcon() }}
+          </span>
+          <h4 [class.completed-text]="task.completed">{{ task.name }}</h4>
+        </div>
+        <div class="task-badges">
+          <span class="priority-badge" [class]="task.getPriorityClass()">
+            {{ task.getPriorityText() }}
+          </span>
           <span class="category-badge">{{ task.category }}</span>
         </div>
+      </div>
         
         <p class="task-description" *ngIf="task.description">
           {{ task.description }}

@@ -31,7 +31,22 @@
         <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
       </select>
     </div>
-
+      <div class="form-group">
+      <label>⚡ Prioridad</label>
+      <div class="priority-selector">
+        <button
+          *ngFor="let p of priorities"
+          type="button"
+          class="priority-btn"
+          [class.selected]="priority === p.value"
+          [style.background]="priority === p.value ? p.color : '#f0f0f0'"
+          [style.color]="priority === p.value ? 'white' : '#333'"
+          (click)="priority = p.value"
+        >
+          {{ p.label }}
+        </button>
+      </div>
+    </div>
     <button type="submit" class="btn-add">Agregar Tarea</button>
   </form>
 </div>
