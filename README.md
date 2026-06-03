@@ -803,3 +803,290 @@ INFO [Chrome Headless 148.0.0.0 (Windows 10)]: Connected on socket ...
 Chrome Headless 148.0.0.0 (Windows 10): Executed 93 of 93 SUCCESS (2.051 secs / 1.844 secs)
 TOTAL: 93 SUCCESS
 ```
+
+---
+
+---
+
+# 4. Pruebas End-to-End (E2E)
+
+## 4.1 ¿Qué son las pruebas E2E?
+
+Las pruebas **End-to-End** simulan el comportamiento de un usuario real interactuando con la aplicación completa desde el navegador. A diferencia de las pruebas unitarias (que prueban piezas aisladas), las E2E verifican el flujo completo: desde que el usuario abre la app hasta que completa una acción.
+
+En TaskFlow se utilizó **Playwright** como framework E2E, que controla un navegador real (Chromium) de forma automatizada.
+
+## 4.2 Configuración
+
+### Instalación
+
+```bash
+cd TrabajoFinaL/TaskFlow
+npm install --save-dev @playwright/test
+npx playwright install chromium
+```
+
+### Archivo de configuración (`playwright.config.ts`)
+
+```typescript
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  use: {
+    baseURL: 'http://localhost:4200',
+    browserName: 'chromium',
+    headless: true,
+  },
+});
+```
+
+### Levantar la app antes de correr los tests E2E
+
+```bash
+# Terminal 1: levantar la app
+npx ng serve
+
+# Terminal 2: correr los tests E2E
+npx playwright test
+```
+
+---
+
+## 4.3 Casos de prueba E2E implementados
+
+### Caso E2E-01 – Login con credenciales correctas
+
+**Descripción:** El usuario ingresa credenciales válidas y es redirigido al panel de tareas.
+
+**Archivo:** `e2e/login.spec.ts`
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('E2E-01: login exitoso redirige a /tasks', async ({ page }) => {
+  await page.goto('/');
+  await page.fill('input[name="username"]', 'admin');
+  await page.fill('input[name="password"]', '1234');
+  await page.click('button[type="submit"]');
+  await expect(page).toHaveURL(/\/tasks/);
+});
+```
+
+| Paso | Acción | Resultado esperado |
+|------|--------|--------------------|
+| 1 | Navegar a `/` | Se muestra el formulario de login |
+| 2 | Ingresar `admin` / `1234` | Campos completados |
+| 3 | Click en "Iniciar Sesión" | Redirige a `/tasks` |
+
+---
+
+### Caso E2E-02 – Login con credenciales incorrectas
+
+**Descripción:** El usuario ingresa una contraseña incorrecta y ve un mensaje de error.
+
+```typescript
+test('E2E-02: login fallido muestra mensaje de error', async ({ page }) => {
+  await page.goto('/');
+  await page.fill('input[name="username"]', 'admin');
+  await page.fill('input[name="password"]', 'incorrecta');
+  await page.click('button[type="submit"]');
+  await expect(page.locator('.error-message')).toBeVisible();
+  await expect(page).not.toHaveURL(/\/tasks/);
+});
+```
+
+| Paso | Acción | Resultado esperado |
+|------|--------|--------------------|
+| 1 | Navegar a `/` | Se muestra el formulario de login |
+| 2 | Ingresar `admin` / `incorrecta` | Campos completados |
+| 3 | Click en "Iniciar Sesión" | Aparece mensaje de error, URL no cambia |
+
+---
+
+### Caso E2E-03 – Crear una tarea nueva
+
+**Descripción:** El usuario autenticado crea una tarea y la ve en la lista.
+
+```typescript
+test('E2E-03: crear tarea aparece en la lista', async ({ page }) => {
+  // Login
+  await page.goto('/');
+  await page.fill('input[name="username"]', 'admin');
+  await page.fill('input[name="password"]', '1234');
+  await page.click('button[type="submit"]');
+
+  // Crear tarea
+  await page.fill('input[name="taskName"]', 'Tarea de prueba E2E');
+  await page.click('button[type="submit"]');
+
+  // Verificar que aparece en la lista
+  await expect(page.locator('text=Tarea de prueba E2E')).toBeVisible();
+});
+```
+
+| Paso | Acción | Resultado esperado |
+|------|--------|--------------------|
+| 1 | Login exitoso | Usuario en `/tasks` |
+| 2 | Completar formulario de tarea | Nombre ingresado |
+| 3 | Click en "Agregar" | Tarea visible en la lista |
+
+---
+
+### Caso E2E-04 – Ruta protegida sin autenticación
+
+**Descripción:** Un usuario no autenticado que intenta acceder a `/tasks` es redirigido al login.
+
+```typescript
+test('E2E-04: ruta protegida redirige a login', async ({ page }) => {
+  await page.goto('/tasks');
+  await expect(page).toHaveURL(/\/login/);
+});
+```
+
+| Paso | Acción | Resultado esperado |
+|------|--------|--------------------|
+| 1 | Navegar directamente a `/tasks` | Redirige a `/login` |
+
+---
+
+### Caso E2E-05 – Cerrar sesión
+
+**Descripción:** El usuario autenticado cierra sesión y es redirigido al login.
+
+```typescript
+test('E2E-05: logout redirige a login', async ({ page }) => {
+  await page.goto('/');
+  await page.fill('input[name="username"]', 'admin');
+  await page.fill('input[name="password"]', '1234');
+  await page.click('button[type="submit"]');
+
+  await page.click('button.logout-btn');
+  await expect(page).toHaveURL(/\/login/);
+});
+```
+
+| Paso | Acción | Resultado esperado |
+|------|--------|--------------------|
+| 1 | Login exitoso | Usuario en `/tasks` |
+| 2 | Click en "Cerrar Sesión" | Redirige a `/login` |
+
+---
+
+## 4.4 Resumen de casos E2E
+
+| ID | Descripción | Resultado esperado |
+|----|-------------|-------------------|
+| E2E-01 | Login con credenciales correctas | Redirige a `/tasks` |
+| E2E-02 | Login con credenciales incorrectas | Muestra error, no navega |
+| E2E-03 | Crear tarea nueva | Tarea aparece en la lista |
+| E2E-04 | Acceder a ruta protegida sin login | Redirige a `/login` |
+| E2E-05 | Cerrar sesión | Redirige a `/login` |
+
+---
+
+## 4.5 Diferencia entre pruebas unitarias y E2E
+
+| Aspecto | Pruebas unitarias (Karma/Jasmine) | Pruebas E2E (Playwright) |
+|---------|----------------------------------|--------------------------|
+| Qué prueban | Componentes y servicios aislados | Flujo completo desde el navegador |
+| Velocidad | Muy rápidas (~2 seg para 93 tests) | Más lentas (requieren app corriendo) |
+| Aislamiento | Usan mocks/spies | Usan la app real |
+| Detectan | Bugs en lógica interna | Bugs en integración UI + lógica |
+
+---
+
+---
+
+# 5. Documentación del Proyecto
+
+## 5.1 Estructura de este documento
+
+Este `README.md` centraliza toda la documentación del Trabajo Práctico Final, organizada en las siguientes secciones:
+
+| Sección | Contenido |
+|---------|-----------|
+| **1. Descriptivo** | Objetivo del software, requerimientos funcionales y no funcionales, diagramas UML (casos de uso, clases, secuencia) |
+| **2. Pruebas** | Documentación de los 6 tipos de prueba implementados: qué verifica cada test y por qué |
+| **3. Ejecución** | Cómo correr las pruebas, entorno utilizado, resultados reales obtenidos |
+| **4. E2E** | Pruebas End-to-End con Playwright: configuración y casos de prueba |
+| **5. Documentación** | Esta sección: estructura y referencias del proyecto |
+
+## 5.2 Estructura del proyecto
+
+```
+TrabajoFinaL/
+├── README.md                  ← Este archivo (documentación completa)
+└── TaskFlow/                  ← Proyecto Angular
+    ├── angular.json
+    ├── karma.conf.js
+    ├── package.json
+    └── src/
+        └── app/
+            ├── components/
+            │   ├── header/
+            │   │   ├── header.component.ts
+            │   │   └── header.component.spec.ts
+            │   ├── login/
+            │   │   ├── login.component.ts
+            │   │   └── login.component.spec.ts
+            │   ├── task-form/
+            │   │   ├── task-form.component.ts
+            │   │   └── task-form.component.spec.ts
+            │   └── task-list/
+            │       ├── task-list.component.ts
+            │       └── task-list.component.spec.ts
+            ├── services/
+            │   ├── auth.service.ts
+            │   ├── auth.service.spec.ts
+            │   ├── task.service.ts
+            │   └── task.service.spec.ts
+            ├── model/
+            │   ├── task.model.ts
+            │   └── user.model.ts
+            └── guards/
+                └── auth.guard.ts
+```
+
+## 5.3 Tecnologías utilizadas
+
+| Tecnología | Versión | Rol |
+|-----------|---------|-----|
+| Angular | 18.1.3 | Framework principal |
+| TypeScript | ~5.5.2 | Lenguaje |
+| Jasmine | 5.1 | Framework de testing |
+| Karma | 6.4.4 | Test runner |
+| Playwright | latest | Testing E2E |
+| Node.js | 20.14.0 | Entorno de ejecución |
+
+## 5.4 Cómo correr el proyecto
+
+```bash
+# Instalar dependencias
+cd TrabajoFinaL/TaskFlow
+npm install
+
+# Iniciar la aplicación
+npx ng serve
+# → http://localhost:4200
+
+# Correr pruebas unitarias
+npx ng test --no-watch --browsers=ChromeHeadless
+
+# Correr pruebas E2E
+npx ng serve &
+npx playwright test
+```
+
+## 5.5 Credenciales de acceso
+
+| Usuario | Contraseña | Nombre |
+|---------|-----------|--------|
+| admin | 1234 | Administrador |
+| alumno | alumno123 | Alumno Demo |
+| juan | juan123 | Juan Pérez |
+| maria | maria123 | María García |
+
+---
+
+*Trabajo Práctico Final – Programación 3 – 2026*
