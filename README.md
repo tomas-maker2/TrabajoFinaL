@@ -1089,7 +1089,7 @@ npx playwright test
 
 ---
 
-Errores en login
+Errores en login.component.ts y login.component.spec.ts
 -- Se intenta entrar con una password incorrecta
 -- Se intenta navegar a una ruta que no existe
 
