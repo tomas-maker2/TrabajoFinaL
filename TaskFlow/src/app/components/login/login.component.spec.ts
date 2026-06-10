@@ -47,7 +47,7 @@ describe('LoginComponent – Prueba de Componentes', () => {
   it('debería llamar a AuthService.login con las credenciales ingresadas', () => {
     authSpy.login.and.returnValue(true);
     component.username = 'admin';
-    component.password = '1234';
+    component.password = '12345';
     component.onLogin();
     expect(authSpy.login).toHaveBeenCalledWith('admin', '1234');
   });

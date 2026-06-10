@@ -22,7 +22,7 @@ export class LoginComponent {
     }
 
     if (this.authService.login(this.username, this.password)) {
-      this.router.navigate(['/tasks']);
+      this.router.navigate(['/intro']);
     } else {
       this.errorMessage = 'Usuario o contraseña incorrectos';
       this.password = '';
