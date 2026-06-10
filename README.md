@@ -1089,4 +1089,8 @@ npx playwright test
 
 ---
 
+Errores en login
+-- Se intenta entrar con una password incorrecta
+-- Se intenta navegar a una ruta que no existe
+
 *Trabajo Práctico Final – Programación 3 – 2026*
